@@ -5,11 +5,12 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>All Employees</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+
+    <button onclick="location.href='@Url.Action("Create", "Employee")'" class="btn btn-success">Create New Employee</button>
+
+
 <table class="table">
     <thead>
         <tr>
