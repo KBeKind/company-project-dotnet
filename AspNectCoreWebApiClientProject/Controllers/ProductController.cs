@@ -1,5 +1,6 @@
 ﻿
 using AspNectCoreWebApiClientProject.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
@@ -10,7 +11,8 @@ using System.Threading.Tasks;
 
 namespace AspNectCoreWebApiClientProject.Controllers
 {
-    public class ProductController : Controller
+	[Authorize]
+	public class ProductController : Controller
     {
         private readonly string apiBaseUrl = "http://localhost:5013/api/Product"; 
 

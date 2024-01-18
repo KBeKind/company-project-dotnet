@@ -1,4 +1,5 @@
 ﻿using AspNectCoreWebApiClientProject.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
@@ -9,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace AspNectCoreWebApiClientProject.Controllers
 {
-    public class EmployeeController : Controller
+	[Authorize]
+	public class EmployeeController : Controller
     {
         private readonly string apiBaseUrl = "http://localhost:5013/api/Employee"; 
 
