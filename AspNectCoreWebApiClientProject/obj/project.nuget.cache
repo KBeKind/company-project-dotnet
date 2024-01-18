@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "kojjYl0zVqr/A1Yx+izz24BfVJN59VQy3hD/ERaVuWCZ1RpuYw3/wTQs5i7SYohPNQ3DyMm0xkvpMiZnI0e/Kw==",
+  "dgSpecHash": "NyuJhIB4FUSW+OGwr4UyTSejzMOFre6NjxGukjwKihAyztTNO4jCMbOfbvNOeQAJGxgU2yumXEeWa2VtQJWlVA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\kyler\\Desktop\\DOTNET-REACT-OFFICIAL\\AspCoreWebReact\\AspNetCoreWebApi\\AspNectCoreWebApiClientProject\\AspNectCoreWebApiClientProject.csproj",
+  "projectFilePath": "C:\\Users\\kyler\\Desktop\\DOTNET-TEST\\AspNetCoreWebApi\\AspNectCoreWebApiClientProject\\AspNectCoreWebApiClientProject.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\kyler\\.nuget\\packages\\humanizer\\2.14.1\\humanizer.2.14.1.nupkg.sha512",
     "C:\\Users\\kyler\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
