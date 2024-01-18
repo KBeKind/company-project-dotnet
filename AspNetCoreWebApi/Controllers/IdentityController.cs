@@ -2,6 +2,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace AspNetCoreWebApi.Controllers
@@ -69,9 +73,9 @@ namespace AspNetCoreWebApi.Controllers
 
                 if (result.Succeeded)
                 {
-                    // User successfully logged in
-                    // Handle success, e.g., generate a token, set authentication cookies, or return user data
-                    return Ok(new { Message = "User logged in successfully" });
+                    var user = await _userManager.FindByNameAsync(model.UserName);
+                    var token = GenerateJwtToken(user);
+                    return Ok(new { Token = token, Message = "User logged in successfully" });
                 }
                 else
                 {
@@ -91,5 +95,26 @@ namespace AspNetCoreWebApi.Controllers
             await _signInManager.SignOutAsync();
             return Ok(new { Message = "User logged out successfully" });
         }
+
+
+        private string GenerateJwtToken(IdentityUser user)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("YourSuperSecretSecurityKey"); // Replace with a secure key
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+            new Claim(ClaimTypes.Name, user.UserName)
+                    // Add other claims as needed
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
+
     }
 }
