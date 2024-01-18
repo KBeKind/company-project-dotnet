@@ -1,15 +1,18 @@
 ﻿using AspNectCoreWebApiClientProject.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 namespace AspNectCoreWebApiClientProject.Controllers
 {
-    
-    
+
+
     public class AccountController : Controller
     {
         private readonly string apiBaseUrl = "http://localhost:5013/api/Identity";
@@ -52,7 +55,7 @@ namespace AspNectCoreWebApiClientProject.Controllers
                         // Log the error or add it to the ModelState
                         ModelState.AddModelError("", "Registration failed: " + errorContent);
                     }
-            
+
                 }
             }
             catch (Exception ex)
@@ -76,8 +79,15 @@ namespace AspNectCoreWebApiClientProject.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Login( FrontendLoginModel model)
+        public async Task<IActionResult> Login(FrontendLoginModel model)
         {
+
+            if (!ModelState.IsValid)
+            {
+                return View(model); // Return the view with validation errors
+            }
+
+
             try
             {
                 using (var client = new HttpClient())
@@ -88,47 +98,61 @@ namespace AspNectCoreWebApiClientProject.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         // Handle successful login
-                     
-                            return RedirectToAction("Index", "Home"); // Redirect to home page after successful registration
-                     
 
-                        // You can set authentication cookies, redirect to a dashboard, or perform other actions based on your application's needs.
+                        var token = await response.Content.ReadAsStringAsync();
+
+                        var claims = new List<Claim>
+                            {
+                        new Claim(ClaimTypes.Name, model.UserName),
+                        // Add other claims as needed
+                            };
+
+                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        var authProperties = new AuthenticationProperties
+                        {
+                            // Configure additional properties as needed
+                        };
+
+                        await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(claimsIdentity),
+                        authProperties);
+
+                        return RedirectToAction("Index", "Home"); // Redirect to home page after successful registration
+
 
                     }
                     else
                     {
-                        // Handle login errors
-                        // You can return a view with error messages or handle it based on your application's needs.
+                        // Read the response content for more details about the error
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        ModelState.AddModelError("", "Login failed: " + errorContent);
                     }
                 }
             }
             catch (Exception ex)
             {
-                // Handle exceptions
-                // You can log the exception or return an error view.
+                ModelState.AddModelError("", "An error occurred during login: " + ex.Message);
             }
 
             return View(model); // Return the login view with validation errors
         }
 
 
-        [HttpPost("logout")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             try
             {
-                // Perform logout logic (e.g., sign out the user)
-                await HttpContext.SignOutAsync(); // Sign out the user
-
-                // Redirect to a specific page or action after successful logout
-                return RedirectToAction("Index", "Home"); // Redirect to the home page, for example
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme); // Specify the scheme
+                return RedirectToAction("Index", "Home"); // Redirect to the home page after logout
             }
             catch (Exception ex)
             {
-                // Handle exceptions
-                // You can log the exception or return an error view.
-                return View("Error"); // Return an error view, or handle it based on your application's needs.
+                // Log the exception and return an error view
+                // Consider logging the exception for debugging purposes
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }
 
