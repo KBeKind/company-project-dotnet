@@ -1,17 +1,34 @@
 using AspNetCoreWebApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
+
+var key = builder.Configuration["JWT_SECRET"];
+if (string.IsNullOrEmpty(key))
+{
+    throw new InvalidOperationException("JWT_SECRET is not set in the configuration.");
+}
+var keyBytes = Convert.FromBase64String(key);
+
 // SERVICES
 builder.Services.AddCors(option =>
 {
     option.AddDefaultPolicy(builder =>
     {
-        builder.AllowAnyOrigin()
+        builder.WithOrigins("http://localhost:3000")
         .AllowAnyMethod()
-        .AllowAnyHeader();
-
+        .AllowAnyHeader()
+        .AllowCredentials(); // USING THIS TO ALLOW CREDENTIALS (COOKIES) TO BE SENT
 
     });
 });
@@ -28,10 +45,32 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
-	options.SignIn.RequireConfirmedEmail = false;
+    options.SignIn.RequireConfirmedEmail = false;
 
 }).AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
+
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(keyBytes), // Use the decoded key
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        // Clock skew compensates for server time drift.
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+
+
 
 
 var app = builder.Build();
@@ -44,7 +83,23 @@ if (app.Environment.IsDevelopment())
 }
 app.UseCors();
 
+
+// Middleware to extract JWT token from cookie
+app.Use(async (context, next) =>
+{
+    var token = context.Request.Cookies["ReactAuthToken"];
+    if (!string.IsNullOrEmpty(token) && !context.Request.Headers.ContainsKey("Authorization"))
+    {
+        context.Request.Headers.Add("Authorization", "Bearer " + token);
+    }
+    await next.Invoke();
+});
+
+
+
+app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapControllers();
 

@@ -5,21 +5,48 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace AspNectCoreWebApiClientProject.Controllers
 {
-	[Authorize]
+	//[Authorize]
 	public class EmployeeController : Controller
     {
-        private readonly string apiBaseUrl = "http://localhost:5013/api/Employee"; 
+        private readonly string apiBaseUrl = "http://localhost:5013/api/Employee";
+
+
+
+        private HttpClient CreateHttpClientWithToken()
+        {
+            var client = new HttpClient();
+            var token = Request.Cookies["JWTToken"];
+            if (!string.IsNullOrEmpty(token))
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+            return client;
+        }
+
+	
+		private bool IsJwtTokenPresent()
+        {
+            var token = Request.Cookies["JWTToken"];
+            return !string.IsNullOrEmpty(token);
+            // Additional checks can be implemented to verify the validity of the token
+        }
+
 
         // GET: Employees
         public async Task<ActionResult> Index()
         {
-            List<Employee> employees = new List<Employee>();
-            using (var client = new HttpClient())
+			var isAuthenticated = IsJwtTokenPresent();
+			ViewData["IsAuthenticated"] = isAuthenticated;
+
+			List<Employee> employees = new List<Employee>();
+            using (var client = CreateHttpClientWithToken())
+
             {
                 using (var response = await client.GetAsync(apiBaseUrl)) 
                 {
@@ -33,8 +60,12 @@ namespace AspNectCoreWebApiClientProject.Controllers
         // GET: Employees/Details/5
         public async Task<ActionResult> Details(int id)
         {
-            var employee = new Employee();
-            using (var client = new HttpClient())
+			var isAuthenticated = IsJwtTokenPresent();
+			ViewData["IsAuthenticated"] = isAuthenticated;
+
+			var employee = new Employee();
+            using (var client = CreateHttpClientWithToken())
+
             {
                 using (var response = await client.GetAsync($"{apiBaseUrl}/{id}"))
                 {
@@ -49,16 +80,23 @@ namespace AspNectCoreWebApiClientProject.Controllers
         // GET: Employees/Create
         public ActionResult Create()
         {
-            return View();
+			var isAuthenticated = IsJwtTokenPresent();
+			ViewData["IsAuthenticated"] = isAuthenticated;
+
+			return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(Employee employee)
         {
-            try
+			var isAuthenticated = IsJwtTokenPresent();
+			ViewData["IsAuthenticated"] = isAuthenticated;
+
+			try
             {
-                using (var client = new HttpClient())
+                using (var client = CreateHttpClientWithToken())
+
                 {
                     var content = new StringContent(JsonConvert.SerializeObject(employee), Encoding.UTF8, "application/json");
                     var response = await client.PostAsync(apiBaseUrl, content);
@@ -100,8 +138,11 @@ namespace AspNectCoreWebApiClientProject.Controllers
         // GET: Employees/Edit/5
         public async Task<ActionResult> Edit(int id)
         {
-            var employee = new Employee();
-            using (var client = new HttpClient())
+			var isAuthenticated = IsJwtTokenPresent();
+			ViewData["IsAuthenticated"] = isAuthenticated;
+
+			var employee = new Employee();
+            using (var client = CreateHttpClientWithToken())
             {
                 using (var response = await client.GetAsync($"{apiBaseUrl}/{id}")) 
                 {
@@ -118,9 +159,12 @@ namespace AspNectCoreWebApiClientProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(int id, Employee employee)
         {
-            try
+			var isAuthenticated = IsJwtTokenPresent();
+			ViewData["IsAuthenticated"] = isAuthenticated;
+
+			try
             {
-                using (var client = new HttpClient())
+                using (var client = CreateHttpClientWithToken())
                 {
                     var content = new StringContent(JsonConvert.SerializeObject(employee), Encoding.UTF8, "application/json");
                     var response = await client.PutAsync($"{apiBaseUrl}/{id}", content);
@@ -162,8 +206,11 @@ namespace AspNectCoreWebApiClientProject.Controllers
         // GET: Employees/Delete/5
         public async Task<ActionResult> Delete(int id)
         {
-            var employee = new Employee();
-            using (var client = new HttpClient())
+			var isAuthenticated = IsJwtTokenPresent();
+			ViewData["IsAuthenticated"] = isAuthenticated;
+
+			var employee = new Employee();
+            using (var client = CreateHttpClientWithToken())
             {
                 using (var response = await client.GetAsync($"{apiBaseUrl}/{id}"))
                 {
@@ -180,9 +227,12 @@ namespace AspNectCoreWebApiClientProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            try
+			var isAuthenticated = IsJwtTokenPresent();
+			ViewData["IsAuthenticated"] = isAuthenticated;
+
+			try
             {
-                using (var client = new HttpClient())
+                using (var client = CreateHttpClientWithToken())
                 {
                     var response = await client.DeleteAsync($"{apiBaseUrl}/{id}"); 
 
