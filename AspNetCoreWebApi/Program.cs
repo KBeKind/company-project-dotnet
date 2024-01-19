@@ -13,9 +13,12 @@ if (builder.Environment.IsDevelopment())
     builder.Configuration.AddUserSecrets<Program>();
 }
 
-
-var keyBytes = Convert.FromBase64String("iiEK+1ZQl4JzeS8U2LtXJ+uEDUvqIaO3OtwXW11kGlI="); // Decode from Base64
-
+var key = builder.Configuration["JWT_SECRET"];
+if (string.IsNullOrEmpty(key))
+{
+    throw new InvalidOperationException("JWT_SECRET is not set in the configuration.");
+}
+var keyBytes = Convert.FromBase64String(key);
 
 // SERVICES
 builder.Services.AddCors(option =>

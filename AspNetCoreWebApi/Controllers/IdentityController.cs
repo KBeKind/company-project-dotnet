@@ -108,8 +108,8 @@ namespace AspNetCoreWebApi.Controllers
             var tokenHandler = new JwtSecurityTokenHandler();
 
             // Decode the Base64-encoded key
-            var key = Convert.FromBase64String("iiEK+1ZQl4JzeS8U2LtXJ+uEDUvqIaO3OtwXW11kGlI=");
-            //var key = Convert.FromBase64String(Configuration["JWT_SECRET"]);
+            //var key = Convert.FromBase64String("iiEK+1ZQl4JzeS8U2LtXJ+uEDUvqIaO3OtwXW11kGlI=");
+            var key = Convert.FromBase64String(_configuration["JWT_SECRET"]);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
