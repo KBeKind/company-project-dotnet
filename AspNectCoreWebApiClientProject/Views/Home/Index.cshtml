@@ -1,11 +1,38 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+	ViewData["Title"] = "Home Page";
+}
+
+@{
+    var isAuthenticated = ViewData["IsAuthenticated"] as bool? ?? false;
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    
-    <h3><a asp-controller="Product" asp-action="Index">Click Here for the Products</a></h3>
-    <h3><a asp-controller="Employee" asp-action="Index">Click Here for the Employees</a></h3>
+	
+
+@* 	<h3><a asp-controller="Product" asp-action="Index">Click Here for the Products</a></h3>
+	<h3><a asp-controller="Employee" asp-action="Index">Click Here for the Employees</a></h3>
+	<h3><a asp-controller="Account" asp-action="Login">Login</a></h3>
+	<h3><a asp-controller="Account" asp-action="Register">Register</a></h3> *@
+
+
+
+
+
+
+    @if (isAuthenticated)
+    {
+    <h2>Welcome, @ViewData["Username"]!</h2>
+        <h3><a asp-controller="Product" asp-action="Index">Click Here for the Products</a></h3>
+        <h3><a asp-controller="Employee" asp-action="Index">Click Here for the Employees</a></h3>
+        <form asp-controller="Account" asp-action="Logout" method="post">
+            <button type="submit" class="btn btn-primary">Logout</button>
+        </form>
+    }
+    else
+    {
+        <h2 class="display-4">Welcome Please Register or Login</h2>
+        <button onclick="location.href='@Url.Action("Login", "Account")'" class="btn btn-success">Login</button>
+        <button onclick="location.href='@Url.Action("Register", "Account")'" class="btn btn-primary">Register</button>
+    }
 
 </div>

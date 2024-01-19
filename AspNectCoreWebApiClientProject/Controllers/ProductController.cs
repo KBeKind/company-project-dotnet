@@ -1,24 +1,55 @@
 ﻿
 using AspNectCoreWebApiClientProject.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace AspNectCoreWebApiClientProject.Controllers
 {
-    public class ProductController : Controller
+	//[Authorize]
+	public class ProductController : Controller
     {
-        private readonly string apiBaseUrl = "http://localhost:5013/api/Product"; 
+        private readonly string apiBaseUrl = "http://localhost:5013/api/Product";
+
+
+
+        private HttpClient CreateHttpClientWithToken()
+        {
+            var client = new HttpClient();
+            var token = Request.Cookies["JWTToken"];
+            if (!string.IsNullOrEmpty(token))
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+            return client;
+        }
+
+		
+
+
+		private bool IsJwtTokenPresent()
+        {
+            var token = Request.Cookies["JWTToken"];
+            return !string.IsNullOrEmpty(token);
+            // Additional checks can be implemented to verify the validity of the token
+        }
+
+
 
         // GET: Product
         public async Task<ActionResult> Index()
         {
-            List<Product> products = new List<Product>();
-            using (var client = new HttpClient())
+			var isAuthenticated = IsJwtTokenPresent();
+			ViewData["IsAuthenticated"] = isAuthenticated;
+
+			List<Product> products = new List<Product>();
+            using (var client = CreateHttpClientWithToken())
             {
                 using (var response = await client.GetAsync(apiBaseUrl))
                 {
@@ -32,8 +63,11 @@ namespace AspNectCoreWebApiClientProject.Controllers
         // GET: Product/Details/5
         public async Task<ActionResult> Details(int id)
         {
-            var product = new Product();
-            using (var client = new HttpClient())
+			var isAuthenticated = IsJwtTokenPresent();
+			ViewData["IsAuthenticated"] = isAuthenticated;
+
+			var product = new Product();
+            using (var client = CreateHttpClientWithToken())
             {
                 using (var response = await client.GetAsync($"{apiBaseUrl}/{id}")) // Use the updated API base URL
                 {
@@ -48,16 +82,22 @@ namespace AspNectCoreWebApiClientProject.Controllers
         // GET: Product/Create
         public ActionResult Create()
         {
-            return View();
+			var isAuthenticated = IsJwtTokenPresent();
+			ViewData["IsAuthenticated"] = isAuthenticated;
+
+			return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(Product product)
         {
-            try
+			var isAuthenticated = IsJwtTokenPresent();
+			ViewData["IsAuthenticated"] = isAuthenticated;
+
+			try
             {
-                using (var client = new HttpClient())
+                using (var client = CreateHttpClientWithToken())
                 {
                     var content = new StringContent(JsonConvert.SerializeObject(product), Encoding.UTF8, "application/json");
                     var response = await client.PostAsync(apiBaseUrl, content); // Use the updated API base URL
@@ -100,8 +140,11 @@ namespace AspNectCoreWebApiClientProject.Controllers
         // GET: Product/Edit/5
         public async Task<ActionResult> Edit(int id)
         {
-            var product = new Product();
-            using (var client = new HttpClient())
+			var isAuthenticated = IsJwtTokenPresent();
+			ViewData["IsAuthenticated"] = isAuthenticated;
+
+			var product = new Product();
+            using (var client = CreateHttpClientWithToken())
             {
                 using (var response = await client.GetAsync($"{apiBaseUrl}/{id}")) // Use the updated API base URL
                 {
@@ -118,9 +161,12 @@ namespace AspNectCoreWebApiClientProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(int id, Product product)
         {
-            try
+			var isAuthenticated = IsJwtTokenPresent();
+			ViewData["IsAuthenticated"] = isAuthenticated;
+
+			try
             {
-                using (var client = new HttpClient())
+                using (var client = CreateHttpClientWithToken())
                 {
                     var content = new StringContent(JsonConvert.SerializeObject(product), Encoding.UTF8, "application/json");
                     var response = await client.PutAsync($"{apiBaseUrl}/update/{id}", content); // Use the updated API base URL
@@ -163,8 +209,11 @@ namespace AspNectCoreWebApiClientProject.Controllers
         // GET: Product/Delete/5
         public async Task<ActionResult> Delete(int id)
         {
-            var product = new Product();
-            using (var client = new HttpClient())
+			var isAuthenticated = IsJwtTokenPresent();
+			ViewData["IsAuthenticated"] = isAuthenticated;
+
+			var product = new Product();
+            using (var client = CreateHttpClientWithToken())
             {
                 using (var response = await client.GetAsync($"{apiBaseUrl}/{id}")) // Use the updated API base URL
                 {
@@ -181,9 +230,12 @@ namespace AspNectCoreWebApiClientProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            try
+			var isAuthenticated = IsJwtTokenPresent();
+			ViewData["IsAuthenticated"] = isAuthenticated;
+
+			try
             {
-                using (var client = new HttpClient())
+                using (var client = CreateHttpClientWithToken())
                 {
                     var response = await client.DeleteAsync($"{apiBaseUrl}/delete/{id}"); // Use the updated API base URL
 
@@ -204,10 +256,13 @@ namespace AspNectCoreWebApiClientProject.Controllers
         [HttpGet]
         public async Task<ActionResult> Search(float? price)
         {
-            try
+			var isAuthenticated = IsJwtTokenPresent();
+			ViewData["IsAuthenticated"] = isAuthenticated;
+
+			try
             {
                 List<Product> products = new List<Product>();
-                using (var client = new HttpClient())
+                using (var client = CreateHttpClientWithToken())
                 {
                     using (var response = await client.GetAsync($"{apiBaseUrl}/price/search?price={price}"))
                     {

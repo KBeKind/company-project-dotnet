@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\kyler\\Desktop\\DOTNET-REACT-OFFICIAL\\AspCoreWebReact\\AspNetCoreWebApi\\AspNetCoreWebApi\\AspNetCoreWebApi.csproj": {}
+    "C:\\Users\\kyler\\Desktop\\DOTNET-TEST\\AspNetCoreWebApi\\AspNetCoreWebApi\\AspNetCoreWebApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\kyler\\Desktop\\DOTNET-REACT-OFFICIAL\\AspCoreWebReact\\AspNetCoreWebApi\\AspNetCoreWebApi\\AspNetCoreWebApi.csproj": {
+    "C:\\Users\\kyler\\Desktop\\DOTNET-TEST\\AspNetCoreWebApi\\AspNetCoreWebApi\\AspNetCoreWebApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\kyler\\Desktop\\DOTNET-REACT-OFFICIAL\\AspCoreWebReact\\AspNetCoreWebApi\\AspNetCoreWebApi\\AspNetCoreWebApi.csproj",
+        "projectUniqueName": "C:\\Users\\kyler\\Desktop\\DOTNET-TEST\\AspNetCoreWebApi\\AspNetCoreWebApi\\AspNetCoreWebApi.csproj",
         "projectName": "AspNetCoreWebApi",
-        "projectPath": "C:\\Users\\kyler\\Desktop\\DOTNET-REACT-OFFICIAL\\AspCoreWebReact\\AspNetCoreWebApi\\AspNetCoreWebApi\\AspNetCoreWebApi.csproj",
+        "projectPath": "C:\\Users\\kyler\\Desktop\\DOTNET-TEST\\AspNetCoreWebApi\\AspNetCoreWebApi\\AspNetCoreWebApi.csproj",
         "packagesPath": "C:\\Users\\kyler\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\kyler\\Desktop\\DOTNET-REACT-OFFICIAL\\AspCoreWebReact\\AspNetCoreWebApi\\AspNetCoreWebApi\\obj\\",
+        "outputPath": "C:\\Users\\kyler\\Desktop\\DOTNET-TEST\\AspNetCoreWebApi\\AspNetCoreWebApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\kyler\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -40,9 +40,21 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
             "Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter": {
               "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[8.0.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.UI": {
+              "target": "Package",
+              "version": "[8.0.1, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
@@ -79,6 +91,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.5.0, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[7.2.0, )"
             }
           },
           "imports": [
