@@ -17,13 +17,19 @@ namespace AspNetCoreWebApi.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<IdentityController> _logger;
 
         public IdentityController(
             UserManager<ApplicationUser> userManager,
-            SignInManager< ApplicationUser > signInManager)
+            SignInManager< ApplicationUser > signInManager,
+            IConfiguration configuration,
+            ILogger<IdentityController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _configuration = configuration;
+            _logger = logger;
         }
 
 
@@ -100,19 +106,68 @@ namespace AspNetCoreWebApi.Controllers
         private string GenerateJwtToken(IdentityUser user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("YourSuperSecretSecurityKey"); // Replace with a secure key
+
+            // Decode the Base64-encoded key
+            var key = Convert.FromBase64String("iiEK+1ZQl4JzeS8U2LtXJ+uEDUvqIaO3OtwXW11kGlI=");
+            //var key = Convert.FromBase64String(Configuration["JWT_SECRET"]);
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new Claim[]
+                Subject = new ClaimsIdentity(new[]
                 {
             new Claim(ClaimTypes.Name, user.UserName)
-                    // Add other claims as needed
-                }),
+            // Add other claims as needed
+        }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
+
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+
+        [HttpPost("ReactLogin")]
+        public async Task<IActionResult> ReactLogin([FromBody] LoginModel model)
+        {
+            _logger.LogInformation("ReactLogin called with username: {Username}", model.UserName);
+
+            if (ModelState.IsValid)
+            {
+                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
+
+                if (result.Succeeded)
+                {
+                    var user = await _userManager.FindByNameAsync(model.UserName);
+                    var token = GenerateJwtToken(user);
+
+                    _logger.LogInformation("Setting ReactAuthToken cookie for user: {Username}", model.UserName);
+                    _logger.LogInformation("Token: {Token}", token);
+
+                    // Set the JWT token in an HttpOnly cookie
+                    var cookieOptions = new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true, // Set to true if you're using HTTPS
+                        SameSite = SameSiteMode.None,
+                        Expires = DateTime.UtcNow.AddDays(7)
+                    };
+                    Response.Cookies.Append("ReactAuthToken", token, cookieOptions);
+
+                    return Ok(new { Message = "User logged in successfully" });
+                }
+                else
+                {
+                    _logger.LogWarning("Invalid login attempt for user: {Username}", model.UserName);
+                    // Login failed, handle errors
+                    return BadRequest(new { Message = "Invalid login attempt" });
+                }
+            }
+            else
+            {
+                _logger.LogWarning("Model validation failed for ReactLogin");
+                return BadRequest(new { Errors = ModelState.Values.SelectMany(v => v.Errors) });
+            }
         }
 
 

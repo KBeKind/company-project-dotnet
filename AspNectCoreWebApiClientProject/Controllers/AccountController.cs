@@ -77,16 +77,13 @@ namespace AspNectCoreWebApiClientProject.Controllers
 
 
 
-
         [HttpPost]
         public async Task<IActionResult> Login(FrontendLoginModel model)
         {
-
             if (!ModelState.IsValid)
             {
                 return View(model); // Return the view with validation errors
             }
-
 
             try
             {
@@ -97,30 +94,42 @@ namespace AspNectCoreWebApiClientProject.Controllers
 
                     if (response.IsSuccessStatusCode)
                     {
-                        // Handle successful login
+                        var jsonResponse = await response.Content.ReadAsStringAsync();
 
-                        var token = await response.Content.ReadAsStringAsync();
-
-                        var claims = new List<Claim>
-                            {
-                        new Claim(ClaimTypes.Name, model.UserName),
-                        // Add other claims as needed
-                            };
-
-                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                        var authProperties = new AuthenticationProperties
+                        // Check if jsonResponse is null or empty
+                        if (string.IsNullOrEmpty(jsonResponse))
                         {
-                            // Configure additional properties as needed
+                            throw new InvalidOperationException("API response is empty.");
+                        }
+
+                        dynamic tokenObject = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
+
+                        // Check if tokenObject is null
+                        if (tokenObject == null)
+                        {
+                            throw new InvalidOperationException("Failed to deserialize API response.");
+                        }
+
+                        // Extract the token string
+                        string token = tokenObject.token;
+
+                        // Check if the token string is null or empty
+                        if (string.IsNullOrEmpty(token))
+                        {
+                            throw new InvalidOperationException("Token is null or empty.");
+                        }
+
+                        // Store the JWT token in a cookie
+                        var cookieOptions = new CookieOptions
+                        {
+                            HttpOnly = true,
+                            Secure = false, // If using HTTPS
+                            SameSite = SameSiteMode.Strict
                         };
+                        Response.Cookies.Append("JWTToken", token, cookieOptions);
 
-                        await HttpContext.SignInAsync(
-                        CookieAuthenticationDefaults.AuthenticationScheme,
-                        new ClaimsPrincipal(claimsIdentity),
-                        authProperties);
-
-                        return RedirectToAction("Index", "Home"); // Redirect to home page after successful registration
-
-
+                        // Redirect to home page after successful login
+                        return RedirectToAction("Index", "Home");
                     }
                     else
                     {
@@ -137,25 +146,27 @@ namespace AspNectCoreWebApiClientProject.Controllers
 
             return View(model); // Return the login view with validation errors
         }
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             try
             {
-                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme); // Specify the scheme
-                return RedirectToAction("Index", "Home"); // Redirect to the home page after logout
+                // Clear the authentication cookie
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+                // Remove the JWT token cookie
+                Response.Cookies.Delete("JWTToken", new CookieOptions { Secure = false, HttpOnly = true });
+
+                // Redirect to the home page after logout
+                return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
             {
                 // Log the exception and return an error view
-                // Consider logging the exception for debugging purposes
                 return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
             }
         }
-
 
 
     }

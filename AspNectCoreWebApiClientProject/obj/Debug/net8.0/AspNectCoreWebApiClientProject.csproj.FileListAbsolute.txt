@@ -712,3 +712,8 @@ C:\Users\kyler\Desktop\DOTNET-TEST\AspNetCoreWebApi\AspNectCoreWebApiClientProje
 C:\Users\kyler\Desktop\DOTNET-TEST\AspNetCoreWebApi\AspNectCoreWebApiClientProject\obj\Debug\net8.0\AspNectCoreWebApiClientProject.pdb
 C:\Users\kyler\Desktop\DOTNET-TEST\AspNetCoreWebApi\AspNectCoreWebApiClientProject\obj\Debug\net8.0\AspNectCoreWebApiClientProject.genruntimeconfig.cache
 C:\Users\kyler\Desktop\DOTNET-TEST\AspNetCoreWebApi\AspNectCoreWebApiClientProject\obj\Debug\net8.0\ref\AspNectCoreWebApiClientProject.dll
+C:\Users\kyler\Desktop\DOTNET-TEST\AspNetCoreWebApi\AspNectCoreWebApiClientProject\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\kyler\Desktop\DOTNET-TEST\AspNetCoreWebApi\AspNectCoreWebApiClientProject\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\kyler\Desktop\DOTNET-TEST\AspNetCoreWebApi\AspNectCoreWebApiClientProject\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\kyler\Desktop\DOTNET-TEST\AspNetCoreWebApi\AspNectCoreWebApiClientProject\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\kyler\Desktop\DOTNET-TEST\AspNetCoreWebApi\AspNectCoreWebApiClientProject\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
