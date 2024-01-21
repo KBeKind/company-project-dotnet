@@ -17,41 +17,40 @@
 	<header>
 		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
 			<div class="container-fluid">
-
-
-				<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-						aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
 				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-					<ul class="navbar-nav flex-grow-1">
+					<ul class="navbar-nav flex-grow-1 mt-2">
+						<li class="nav-item">
+							<a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+						</li>
 						<li class="nav-item">
 							<a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Products </a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="Index">Employees </a>
 						</li>
+						
+						<form id="logoutAndRedirectForm" asp-controller="Account" asp-action="Logout" method="post">
+							<input type="hidden" name="redirectTo" value="ReactRedirect">
+							<li class="nav-item">
+								<a class="nav-link text-dark" href="#" id="text-button">Go to React Page </a>
+							</li>
+						</form>
 						<li class="nav-item">
-							<a class="nav-link text-dark" href="http://localhost:3000">Go to React Pages</a>
+							<p class="nav-link text-dark">(Going to the React Page will log you out)</p>
 						</li>
 					</ul>
+					
 
 					@if (isAuthenticated)
 					{
-
 						<form asp-controller="Account" asp-action="Logout" method="post">
 							<button type="submit" class="btn btn-primary">Logout</button>
 						</form>
-
-
 					}
 					else
 					{
 						<button onclick="location.href='@Url.Action("Login", "Account")'" class="btn btn-success mx-2">Login</button>
-
 						<button onclick="location.href='@Url.Action("Register", "Account")'" class="btn btn-primary mx-2">Register</button>
-
 					}
 				</div>
 			</div>
@@ -68,9 +67,18 @@
 			&copy; 2024 - Kyle Riebeling - KBeKind.com - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
 		</div>
 	</footer>
+	<script>
+		document.getElementById("logoutAndRedirectForm").addEventListener("click", (event) => {
+		if (event.target.id === "text-button") {
+			event.preventDefault();
+			event.target.closest("form").submit();
+		}
+		});
+	</script>
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
+
 	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
