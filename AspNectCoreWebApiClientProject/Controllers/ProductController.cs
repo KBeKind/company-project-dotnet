@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace AspNectCoreWebApiClientProject.Controllers
 {
-	//[Authorize]
+	[Authorize]
 	public class ProductController : Controller
     {
         private readonly string apiBaseUrl = "http://localhost:5013/api/Product";

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace AspNectCoreWebApiClientProject.Controllers
 {
-	//[Authorize]
+	[Authorize]
 	public class EmployeeController : Controller
     {
         private readonly string apiBaseUrl = "http://localhost:5013/api/Employee";

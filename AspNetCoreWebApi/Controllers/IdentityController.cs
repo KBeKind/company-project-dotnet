@@ -144,22 +144,32 @@ namespace AspNetCoreWebApi.Controllers
                     _logger.LogInformation("Setting ReactAuthToken cookie for user: {Username}", model.UserName);
                     _logger.LogInformation("Token: {Token}", token);
 
-                    // Set the JWT token in an HttpOnly cookie
+                    // SET JWT TOKEN AS COOKIE
                     var cookieOptions = new CookieOptions
                     {
                         HttpOnly = true,
-                        Secure = true, // Set to true if you're using HTTPS
+                        Secure = true, 
                         SameSite = SameSiteMode.None,
                         Expires = DateTime.UtcNow.AddDays(7)
                     };
                     Response.Cookies.Append("ReactAuthToken", token, cookieOptions);
+
+
+                    // SET UI-ONLY COOKIE
+                    var uiCookieOptions = new CookieOptions
+                    {
+                        HttpOnly = false, 
+                        Secure = true, 
+                        SameSite = SameSiteMode.None,
+                        Expires = DateTime.UtcNow.AddDays(7)
+                    };
+                    Response.Cookies.Append("UIAuthState", "loggedIn", uiCookieOptions);
 
                     return Ok(new { Message = "User logged in successfully" });
                 }
                 else
                 {
                     _logger.LogWarning("Invalid login attempt for user: {Username}", model.UserName);
-                    // Login failed, handle errors
                     return BadRequest(new { Message = "Invalid login attempt" });
                 }
             }
@@ -169,6 +179,22 @@ namespace AspNetCoreWebApi.Controllers
                 return BadRequest(new { Errors = ModelState.Values.SelectMany(v => v.Errors) });
             }
         }
+
+        [HttpPost("ReactLogout")]
+        public async Task<IActionResult> ReactLogout()
+        {
+            // REMOVE USER FROM SERVER-SIDE SESSION
+            await _signInManager.SignOutAsync();
+
+            // CLEAR JWT
+            Response.Cookies.Append("ReactAuthToken", "", new CookieOptions { HttpOnly = true, Secure = true, SameSite = SameSiteMode.None, Expires = DateTime.UtcNow.AddDays(-1) });
+
+            // CLEAR UI-ONLY
+            //Response.Cookies.Append("UIAuthState", "", new CookieOptions { HttpOnly = false, Secure = true, SameSite = SameSiteMode.None, Expires = DateTime.UtcNow.AddDays(-1) });
+
+            return Ok(new { Message = "User logged out successfully" });
+        }
+
 
 
     }

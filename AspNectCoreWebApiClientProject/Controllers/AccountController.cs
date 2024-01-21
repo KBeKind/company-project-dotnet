@@ -148,8 +148,9 @@ namespace AspNectCoreWebApiClientProject.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
-        {
+      
+        public async Task<IActionResult> Logout(string redirectTo = null)
+		{
             try
             {
                 // Clear the authentication cookie
@@ -158,9 +159,18 @@ namespace AspNectCoreWebApiClientProject.Controllers
                 // Remove the JWT token cookie
                 Response.Cookies.Delete("JWTToken", new CookieOptions { Secure = false, HttpOnly = true });
 
-                // Redirect to the home page after logout
-                return RedirectToAction("Index", "Home");
-            }
+
+				if (!string.IsNullOrEmpty(redirectTo) && redirectTo == "ReactRedirect")
+				{
+					return Redirect("http://localhost:3000");
+				}
+				else
+				{
+					return RedirectToAction("Index", "Home");
+				}
+
+
+			}
             catch (Exception ex)
             {
                 // Log the exception and return an error view
