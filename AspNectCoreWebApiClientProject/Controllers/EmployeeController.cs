@@ -167,9 +167,10 @@ namespace AspNectCoreWebApiClientProject.Controllers
                 using (var client = CreateHttpClientWithToken())
                 {
                     var content = new StringContent(JsonConvert.SerializeObject(employee), Encoding.UTF8, "application/json");
-                    var response = await client.PutAsync($"{apiBaseUrl}/{id}", content);
+                    var response = await client.PutAsync($"{apiBaseUrl}/update/{id}", content);
+				
 
-                    if (response.IsSuccessStatusCode)
+					if (response.IsSuccessStatusCode)
                     {
                         return RedirectToAction(nameof(Index));
                     }
