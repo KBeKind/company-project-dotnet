@@ -167,9 +167,10 @@ namespace AspNectCoreWebApiClientProject.Controllers
                 using (var client = CreateHttpClientWithToken())
                 {
                     var content = new StringContent(JsonConvert.SerializeObject(employee), Encoding.UTF8, "application/json");
-                    var response = await client.PutAsync($"{apiBaseUrl}/{id}", content);
+                    var response = await client.PutAsync($"{apiBaseUrl}/update/{id}", content);
+				
 
-                    if (response.IsSuccessStatusCode)
+					if (response.IsSuccessStatusCode)
                     {
                         return RedirectToAction(nameof(Index));
                     }
@@ -223,31 +224,31 @@ namespace AspNectCoreWebApiClientProject.Controllers
         }
 
         // POST: Employees/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteConfirmed(int id)
-        {
+		[HttpPost, ActionName("Delete")]
+		[ValidateAntiForgeryToken]
+		public async Task<ActionResult> DeleteConfirmed(int id)
+		{
 			var isAuthenticated = IsJwtTokenPresent();
 			ViewData["IsAuthenticated"] = isAuthenticated;
 
 			try
-            {
-                using (var client = CreateHttpClientWithToken())
-                {
-                    var response = await client.DeleteAsync($"{apiBaseUrl}/{id}"); 
+			{
+				using (var client = CreateHttpClientWithToken())
+				{
+					var response = await client.DeleteAsync($"{apiBaseUrl}/delete/{id}"); // Use the updated API base URL
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
-                }
-            }
-            catch
-            {
-                
-            }
-            return RedirectToAction(nameof(Index));
-        }
+					if (response.IsSuccessStatusCode)
+					{
+						return RedirectToAction(nameof(Index));
+					}
+				}
+			}
+			catch
+			{
+				// Log the exception (optional)
+			}
+			return RedirectToAction(nameof(Index));
+		}
 
-    }
+	}
 }
