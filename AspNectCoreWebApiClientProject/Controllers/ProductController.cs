@@ -226,7 +226,7 @@ namespace AspNectCoreWebApiClientProject.Controllers
 		}
 
 		// POST: Product/Delete/5
-		[HttpDelete, ActionName("Delete")]
+		[HttpPost, ActionName("Delete")]
 		[ValidateAntiForgeryToken]
 		public async Task<ActionResult> DeleteConfirmed(int id)
 		{

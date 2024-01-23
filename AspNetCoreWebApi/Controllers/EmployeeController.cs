@@ -76,25 +76,31 @@ namespace AspNetCoreWebApi.Controllers
             return CreatedAtAction("GetEmployee", new { id = employee.Id }, employee);
         }
 
-        // DELETE: api/Employees/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEmployee(int id)
-        {
-            var employee = await _context.Employees.FindAsync(id);
-            if (employee == null)
-            {
-                return NotFound();
-            }
+		// DELETE: api/Employees/5
+		[HttpDelete("delete/{id}")]
+		public IActionResult DeleteEmployee(int id)
+		{
+			var employee = _context.Employees.Find(id);
+			if (employee == null)
+			{
+				return NotFound();
+			}
 
-            _context.Employees.Remove(employee);
-            await _context.SaveChangesAsync();
+			try
+			{
+				_context.Employees.Remove(employee);
+				_context.SaveChanges();
+				return Ok();
+			}
+			catch (Exception ex)
+			{
+				// Log the exception
+				return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+			}
+		}
 
-            return NoContent();
-        }
 
-        private bool EmployeeExists(int id)
-        {
-            return _context.Employees.Any(e => e.Id == id);
-        }
-    }
+
+
+	}
 }
