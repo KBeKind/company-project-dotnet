@@ -22,14 +22,14 @@ namespace AspNetCoreWebApi.Controllers
             _context = context;
         }
 
-        // GET: api/Employee
+        // GET
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
         {
             return await _context.Employees.ToListAsync();
         }
 
-        // GET: api/Employee/5
+        // GET
         [HttpGet("{id}")]
         public async Task<ActionResult<Employee>> GetEmployee(int id)
         {
@@ -43,7 +43,7 @@ namespace AspNetCoreWebApi.Controllers
             return employee;
         }
 
-		// PUT: api/Employees/5
+		// PUT
 		[HttpPut("update/{id}")]
 
 		public async Task<IActionResult> PutEmployee(int id, Employee employee)
@@ -65,10 +65,10 @@ namespace AspNetCoreWebApi.Controllers
 			};
         }
 
-        // POST: api/Employees
+        // POST
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Employee>> PostEmployee(Employee employee)
+        public async Task<ActionResult<Employee>>AddEmployee(Employee employee)
         {
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
